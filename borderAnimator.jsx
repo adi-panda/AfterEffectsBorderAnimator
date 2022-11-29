@@ -1,52 +1,145 @@
-/*
-    Animate the border of a layer
-*/
+
+
+
+
+
 (function borderAnimator (thisObj) {
-    /* Build UI */
+    buildUI(thisObj); // Calling the function to build the panel
+
     function buildUI(thisObj) {
+      var windowName = "BorderAnimator";
+  
+  
+      /* Build UI */
+        // BORDERANIMTOR
+    // =============
+    var BorderAnimtor  =
+    thisObj instanceof Panel
+      ? thisObj
+      : new Window("window", windowName, undefined, {
+          resizeable: true,
+        });
+    BorderAnimtor.text = "Border Animator"; 
+    BorderAnimtor.preferredSize.width = 139; 
+    BorderAnimtor.orientation = "column"; 
+    BorderAnimtor.alignChildren = ["center","top"]; 
+    BorderAnimtor.spacing = 10; 
+    BorderAnimtor.margins = 16; 
 
-        var windowTitle = localize("Border Animator");
-        var firstButton = "Down"
-        var secondButton = "Left";
-        var thirdButton = "Right";
-        var fourthButton = "Up";
-        var fifthButton = "Create Nulls From Paths";
-        var win = (thisObj instanceof Panel)? thisObj : new Window('palette', windowTitle);
-            win.spacing = 0;
-            win.margins = 4;
-            var myButtonGroup = win.add ("group");
-                myButtonGroup.spacing = 4;
-                myButtonGroup.margins = 0;
-                myButtonGroup.orientation = "row";
-                win.button1 = myButtonGroup.add ("button", undefined, firstButton);
-                win.button2 = myButtonGroup.add ("button", undefined, secondButton);
-                win.button3 = myButtonGroup.add ("button", undefined, thirdButton);
-                win.button4 = myButtonGroup.add ("button", undefined, fourthButton);
-                win.button5 = myButtonGroup.add ("button", undefined, fifthButton);
-                myButtonGroup.alignment = "center";
-                myButtonGroup.alignChildren = "center";
+    var button1 = BorderAnimtor.add("button", undefined, undefined, {name: "button1"}); 
+    button1.text = "Create Nulls From Path"; 
+    
+    var oneX;
+    var twoX;
+    var threeX;
+    var fourX;
 
-            win.button1.onClick = function(){
-                moveBorder("Down");
-            }
-            win.button2.onClick = function(){
-                moveBorder("Left");
-            }   
-            win.button3.onClick = function(){
-                moveBorder("Right");
-            }
-            win.button4.onClick = function(){
-                moveBorder("Up");
-            }
-            win.button5.onClick = function(){
-                linkPointsToNulls();
-            }
+    var getButton = BorderAnimtor.add("button", undefined, undefined, {name: "getButton"}); 
+    getButton.text = "Get Current Position";
+    getButton.onClick = function () {
+        var comp = app.project.activeItem;
+        oneX = comp.selectedLayers[0].property("Transform")("Position").valueAtTime(app.project.activeItem.time, false);
+        twoX = comp.selectedLayers[1].property("Transform")("Position").valueAtTime(app.project.activeItem.time, false);
+        threeX = comp.selectedLayers[2].property("Transform")("Position").valueAtTime(app.project.activeItem.time, false);
+        fourX = comp.selectedLayers[3].property("Transform")("Position").valueAtTime(app.project.activeItem.time, false);
 
-        win.layout.layout(true);
+    };
 
-        return win
+    
+    // PANEL1
+    // ======
+    var panel1 = BorderAnimtor.add("panel", undefined, undefined, {name: "panel1"}); 
+    panel1.text = "Controls"; 
+    panel1.orientation = "column"; 
+    panel1.alignChildren = ["left","top"]; 
+    panel1.spacing = 10; 
+    panel1.margins = 10; 
+
+    //GROUP 0
+    var group0 = panel1.add("group", undefined, {name: "group1"}); 
+    group0.orientation = "row"; 
+    group0.alignChildren = ["left","center"]; 
+    group0.spacing = 10; 
+    group0.margins = 0;
+
+    var resetButton = group0.add("button", undefined, undefined, {name: "resetButton"}); 
+    resetButton.text = "Reset"; 
+    resetButton.onClick = function () {
+        var comp = app.project.activeItem;
+        comp.selectedLayers[0].property("Transform")("Position").setValueAtTime(app.project.activeItem.time, oneX);
+        comp.selectedLayers[1].property("Transform")("Position").setValueAtTime(app.project.activeItem.time, twoX);
+        comp.selectedLayers[2].property("Transform")("Position").setValueAtTime(app.project.activeItem.time, threeX);
+        comp.selectedLayers[3].property("Transform")("Position").setValueAtTime(app.project.activeItem.time, fourX);
     }
 
+    var centerButton = group0.add("button", undefined, undefined, {name: "centerButton"}); 
+    centerButton.text = "Center"; 
+    centerButton.onClick = function () {
+        moveBorder("Center");
+    }
+
+
+    // GROUP1
+    // ======
+    var group1 = panel1.add("group", undefined, {name: "group1"}); 
+    group1.orientation = "row"; 
+    group1.alignChildren = ["left","center"]; 
+    group1.spacing = 10; 
+    group1.margins = 0; 
+
+    var button2 = group1.add("button", undefined, undefined, {name: "button2"}); 
+    button2.text = "Left"; 
+
+    var button3 = group1.add("button", undefined, undefined, {name: "button3"}); 
+    button3.text = "Right"; 
+    button3.alignment = ["left","center"]; 
+
+    // GROUP2
+    // ======
+    var group2 = panel1.add("group", undefined, {name: "group2"}); 
+    group2.orientation = "row"; 
+    group2.alignChildren = ["left","center"]; 
+    group2.spacing = 10; 
+    group2.margins = 0; 
+
+    var button4 = group2.add("button", undefined, undefined, {name: "button4"}); 
+    button4.text = "Up"; 
+
+    var button5 = group2.add("button", undefined, undefined, {name: "button5"}); 
+    button5.text = "Down"; 
+
+
+    
+    button1.onClick = function() {
+        linkPointsToNulls();
+        
+    }
+    button2.onClick = function() {
+        moveBorder("Left");
+    }
+    button3.onClick = function() {
+        moveBorder("Right");
+        
+    }
+    button4.onClick = function() {
+        moveBorder("Up");
+    }
+    button5.onClick = function() {
+        moveBorder("Down");
+    }
+  
+    BorderAnimtor.onResizing = BorderAnimtor.onResize = function () {
+        this.layout.resize();
+      };
+      if (BorderAnimtor instanceof Window) {
+        BorderAnimtor.center();
+        BorderAnimtor.show();
+      } else {
+        BorderAnimtor.layout.layout(true);
+        BorderAnimtor.layout.resize();
+      }
+    }
+        
     function moveBorder(direction){
         var comp = app.project.activeItem;
         var one = comp.selectedLayers[0];
@@ -55,33 +148,55 @@
         var four = comp.selectedLayers[3];
         if (direction == "Down"){
             //move border down
-            four.property("Transform")("Position").setValue(one.property("Transform")("Position").value);
-            three.property("Transform")("Position").setValue(two.property("Transform")("Position").value);
+            four.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                one.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
+            three.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                two.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
         }
         else if (direction == "Left"){
             //move border left
-            one.property("Transform")("Position").setValue(two.property("Transform")("Position").value);
-            four.property("Transform")("Position").setValue(three.property("Transform")("Position").value);
+            one.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                two.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
+            four.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                three.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
         }
         else if (direction == "Right"){
             //move border right
-            two.property("Transform")("Position").setValue(one.property("Transform")("Position").value);
-            three.property("Transform")("Position").setValue(four.property("Transform")("Position").value);
+            two.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                one.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
+            three.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                four.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
         }
         else if (direction == "Up"){
             //move border up
-            one.property("Transform")("Position").setValue(four.property("Transform")("Position").value);
-            two.property("Transform")("Position").setValue(three.property("Transform")("Position").value);
+            one.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                four.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
+            two.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                three.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
+        }
+        else if (direction == "Center"){
+            //move border center
+            one.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                [averagePoint(four,one)[0], averagePoint(four,one)[1]]);
+            two.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                [averagePoint(two,three)[0], averagePoint(two,three)[1]]);
+            four.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                one.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
+            three.property("Transform")("Position").setValueAtTime(app.project.activeItem.time, 
+                two.property("Transform")("Position").valueAtTime(app.project.activeItem.time, false));
         }
     }
 
+    function averagePoint(point1, point2){
+        var x = ((point1("Transform")("Position").valueAtTime(app.project.activeItem.time, false)[0] 
+        + point2("Transform")("Position").valueAtTime(app.project.activeItem.time, false)[0]))/2;
+        var y = ((point1("Transform")("Position").valueAtTime(app.project.activeItem.time, false)[1] 
+        + point2("Transform")("Position").valueAtTime(app.project.activeItem.time, false)[1]))/2;
+        return [x,y];
+    }
 
-    // Show the Panel
-    var w = buildUI(thisObj);
-    if (w.toString() == "[object Panel]") {
-        w;
-    } else {
-        w.show();
+    function reset(){
+
     }
 
 

@@ -110,7 +110,7 @@
 
     
     button1.onClick = function() {
-        app.project.activeItem.selectedLayers[0]("Contents")("Rectangle 1")("Contents")("Path 1").property(2).selected = true;
+        app.project.activeItem.selectedLayers[0]("Contents")(1)("Contents")("Path 1").property(2).selected = true;
         linkPointsToNulls();
         
     }

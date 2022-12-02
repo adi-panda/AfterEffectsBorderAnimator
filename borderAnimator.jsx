@@ -1,7 +1,6 @@
-
-
-
-
+//border animator for after effects by Aditya Panda
+//version 1.0
+//www.adipanda.com
 
 (function borderAnimator (thisObj) {
     buildUI(thisObj); // Calling the function to build the panel
@@ -111,6 +110,7 @@
 
     
     button1.onClick = function() {
+        app.project.activeItem.selectedLayers[0]("Contents")("Rectangle 1")("Contents")("Path 1").property(2).selected = true;
         linkPointsToNulls();
         
     }
